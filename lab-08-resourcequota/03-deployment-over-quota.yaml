@@ -1,0 +1,25 @@
+# Deployment que pide 5 réplicas. Cada una es válida por separado, pero la suma no cabe en la cuota:
+# 5 x 100m de CPU reservada = 500m, y la cuota solo permite 300m. Es el corazón del laboratorio.
+apiVersion: apps/v1                                      # Grupo "apps" del API, versión 1.
+kind: Deployment                                         # Tipo de objeto: un despliegue administrado.
+metadata:                                                # Datos que identifican al objeto.
+  name: web-over-quota                                   # Nombre del Deployment.
+  namespace: lab-resource-quota                          # Namespace donde vive; debe existir antes.
+  labels:                                                # Etiquetas del Deployment en sí.
+    app.kubernetes.io/name: web-over-quota               # Nombre lógico de la aplicación.
+spec:                                                    # Lo que quieres que exista.
+  replicas: 5                                            # Pides 5 copias; solo van a caber 3.
+  selector:                                              # Cómo reconoce el Deployment a los Pods que son suyos.
+    matchLabels:                                         # Reconoce por coincidencia exacta de etiquetas.
+      app.kubernetes.io/name: web-over-quota             # Son suyos los Pods con esta etiqueta exacta.
+  template:                                              # El molde con el que se fabrica cada Pod.
+    metadata:                                            # Datos del Pod que se va a fabricar.
+      labels:                                            # Etiquetas que lleva cada Pod.
+        app.kubernetes.io/name: web-over-quota           # La etiqueta que el selector busca.
+    spec:                                                # Contenido del Pod.
+      automountServiceAccountToken: false                # El contenedor no habla con el API; no recibe credenciales.
+      containers:                                        # Lista de contenedores del Pod; aquí uno solo.
+        - name: pausa                                    # Nombre del contenedor dentro del Pod.
+          image: registry.k8s.io/pause:3.10              # Contenedor inerte: no hace nada y casi no consume.
+          # A propósito NO hay bloque resources: el LimitRange le inyecta los valores por defecto
+          # (requests 100m de CPU y 64Mi, limits 200m y 128Mi) y con esos números lo cobra la cuota.

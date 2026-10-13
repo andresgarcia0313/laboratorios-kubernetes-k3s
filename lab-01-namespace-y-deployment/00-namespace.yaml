@@ -1,0 +1,7 @@
+# Namespace: una habitacion separada dentro del clúster, para que este laboratorio no se mezcle con nada más.
+apiVersion: v1                                  # Versión del API de Kubernetes que define este tipo de objeto.
+kind: Namespace                                 # Tipo de objeto: un espacio de nombres.
+metadata:                                       # Datos que identifican al objeto.
+  name: lab-01                                  # Nombre del namespace; se usa en todos los comandos con -n lab-01.
+  labels:                                       # Etiquetas: pares clave-valor para buscar y agrupar objetos.
+    app.kubernetes.io/part-of: kit-kubernetes   # Etiqueta estándar que dice a qué conjunto pertenece.

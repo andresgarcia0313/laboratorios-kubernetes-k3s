@@ -1,0 +1,34 @@
+# Deployment: la orden "mantén siempre 2 copias de esta aplicación corriendo".
+apiVersion: apps/v1                                   # Grupo "apps" del API, versión 1; aquí viven los Deployment.
+kind: Deployment                                      # Tipo de objeto: un despliegue administrado.
+metadata:                                             # Datos que identifican al objeto.
+  name: tienda                                        # Nombre del Deployment.
+  namespace: lab-01                                   # Habitación donde vive; debe existir antes.
+  labels:                                             # Etiquetas del Deployment en sí.
+    app.kubernetes.io/name: tienda                    # Nombre lógico de la aplicación.
+    app.kubernetes.io/part-of: kit-kubernetes         # Conjunto al que pertenece.
+spec:                                                 # Lo que quieres que exista (el deseo, no el estado actual).
+  replicas: 2                                         # Cuántas copias del Pod quieres corriendo al mismo tiempo.
+  selector:                                           # Cómo reconoce el Deployment a los Pods que son suyos.
+    matchLabels:                                      # Reconoce por coincidencia exacta de etiquetas.
+      app.kubernetes.io/name: tienda                  # Son suyos los Pods con esta etiqueta exacta.
+  template:                                           # El molde con el que se fabrica cada Pod.
+    metadata:                                         # Datos del Pod que se va a fabricar.
+      labels:                                         # Etiquetas que lleva cada Pod; deben casar con el selector.
+        app.kubernetes.io/name: tienda                # La etiqueta que el selector busca.
+        app.kubernetes.io/part-of: kit-kubernetes     # Conjunto al que pertenece.
+    spec:                                             # Contenido del Pod.
+      automountServiceAccountToken: false             # La aplicación no habla con el API, así que no recibe credenciales.
+      containers:                                     # Lista de contenedores del Pod; aquí uno solo.
+        - name: tienda                                # Nombre del contenedor dentro del Pod.
+          image: andresgarcia0313/nodehostname:1.0.0  # Imagen con versión fija; nunca uses :latest en serio.
+          ports:                                      # Puertos que el contenedor expone (informativo y para nombrarlos).
+            - name: http                              # Nombre del puerto; otros objetos lo llaman por este nombre.
+              containerPort: 3000                     # Puerto donde escucha la aplicación dentro del contenedor.
+          resources:                                  # Recursos de CPU y memoria que pide y que como máximo usa.
+            requests:                                 # Lo que se le reserva siempre (influye en dónde se agenda).
+              cpu: 10m                                # 10 milicpu; una centésima de un núcleo.
+              memory: 32Mi                            # 32 mebibytes de memoria reservada.
+            limits:                                   # El techo; si lo pasa en memoria, el contenedor se reinicia.
+              cpu: 200m                               # Máximo 200 milicpu, un quinto de núcleo.
+              memory: 128Mi                           # Máximo 128 mebibytes de memoria.

@@ -1,0 +1,22 @@
+# LimitRange: reglas de tamaño POR CONTENEDOR. Aquí está para que ningún Pod llegue sin declarar recursos,
+# porque una ResourceQuota de cpu y memoria exige que todo Pod los declare.
+apiVersion: v1                      # Versión del API; los LimitRange son objetos del grupo principal.
+kind: LimitRange                    # Tipo de objeto: rango de límites por contenedor.
+metadata:                           # Datos que identifican al objeto.
+  name: container-limits            # Nombre del LimitRange.
+  namespace: lab-resource-quota     # Solo afecta a los Pods de este namespace.
+spec:                               # Lo que quieres que exista.
+  limits:                           # Lista de reglas; cada entrada aplica a un tipo de objeto.
+    - type: Container               # Esta regla mira cada contenedor, uno por uno.
+      min:                          # Lo mínimo que puede pedir un contenedor; por debajo se rechaza.
+        cpu: 50m                    # 50 milicpu, la veinteava parte de un núcleo.
+        memory: 32Mi                # 32 mebibytes de memoria.
+      max:                          # Lo máximo que puede pedir un contenedor; por encima se rechaza.
+        cpu: 500m                   # 500 milicpu, medio núcleo.
+        memory: 256Mi               # 256 mebibytes de memoria.
+      defaultRequest:               # Lo que se le reserva si el contenedor no declara requests.
+        cpu: 100m                   # 100 milicpu reservados por defecto.
+        memory: 64Mi                # 64 mebibytes reservados por defecto.
+      default:                      # El techo que se le pone si el contenedor no declara limits.
+        cpu: 200m                   # 200 milicpu de techo por defecto.
+        memory: 128Mi               # 128 mebibytes de techo por defecto.

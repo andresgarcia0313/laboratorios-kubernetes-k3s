@@ -1,0 +1,14 @@
+# ResourceQuota: el presupuesto TOTAL del namespace, es decir la suma de todos sus Pods.
+# Cuenta lo DECLARADO (requests y limits), no el consumo real de CPU y memoria.
+apiVersion: v1                      # Versión del API; las ResourceQuota son del grupo principal.
+kind: ResourceQuota                 # Tipo de objeto: cuota de recursos del namespace.
+metadata:                           # Datos que identifican al objeto.
+  name: namespace-quota             # Nombre de la cuota.
+  namespace: lab-resource-quota     # Namespace cuyo presupuesto se controla.
+spec:                               # Lo que quieres que exista.
+  hard:                             # Topes duros; pasarse de cualquiera de ellos bloquea el Pod nuevo.
+    pods: "10"                      # Como máximo 10 Pods en el namespace.
+    requests.cpu: 300m              # Suma máxima de CPU reservada por todos los Pods.
+    requests.memory: 256Mi          # Suma máxima de memoria reservada por todos los Pods.
+    limits.cpu: 600m                # Suma máxima de los techos de CPU de todos los Pods.
+    limits.memory: 512Mi            # Suma máxima de los techos de memoria de todos los Pods.

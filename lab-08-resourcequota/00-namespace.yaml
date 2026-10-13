@@ -1,0 +1,7 @@
+# Namespace del laboratorio de cuotas. Lo comparten el laboratorio 08 y el 09: ejecútalos uno después del otro.
+apiVersion: v1                                  # Versión del API de Kubernetes que define este tipo de objeto.
+kind: Namespace                                 # Tipo de objeto: un espacio de nombres.
+metadata:                                       # Datos que identifican al objeto.
+  name: lab-resource-quota                      # Nombre del namespace; es el mismo de la corrida original del autor.
+  labels:                                       # Etiquetas: pares clave-valor para buscar y agrupar objetos.
+    app.kubernetes.io/part-of: kit-kubernetes   # Etiqueta estándar que dice a qué conjunto pertenece.
